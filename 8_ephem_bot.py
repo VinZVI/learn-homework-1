@@ -46,32 +46,22 @@ def talk_to_me(update, context):
 
 def planet_constellation(update, context):
     user_text = update.message.text
-    name_planet = user_text.split()[1].lower()
+    name_planet = user_text.split()[1].capitalize()
 
 
-    planet_dict = {
-        'jupiter': ephem.Jupiter(),
-        'saturn': ephem.Saturn(),
-        'uranus': ephem.Uranus(),
-        'neptune': ephem.Neptune(),
-        'mars': ephem.Mars(),
-        'venus': ephem.Venus(),
-        'moon': ephem.Moon(),
-        'mercury': ephem.Mercury(),
-        'pluto': ephem.Pluto()
-    }
-    class_planet = planet_dict.get(name_planet)
-    if class_planet:
+
+    if hasattr(ephem, name_planet):
+        class_planet = getattr(ephem, name_planet)
 
         today = datetime.date.today()
-        class_planet.compute(today)
+        object_planet = class_planet(today)
 
-        constellation_name = ephem.constellation(class_planet)
+        constellation_name = ephem.constellation(object_planet)
 
-        update.message.reply_text(f'"{name_planet.capitalize()}" cегодня находится в созвездии "{constellation_name[1]}"')
+        update.message.reply_text(f'"{name_planet}" cегодня находится в созвездии "{constellation_name[1]}"')
 
     else:
-        update.message.reply_text(f'Планета "{name_planet.capitalize()}" не найдена, попробуйте еще раз.')
+        update.message.reply_text(f'Планета "{name_planet}" не найдена, попробуйте еще раз.')
 
 def main():
     mybot = Updater(settings.TOKEN, use_context=True)
